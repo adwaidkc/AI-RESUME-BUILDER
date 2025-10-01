@@ -12,14 +12,14 @@ const LightbulbIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h
 // --- MAIN APP COMPONENT ---
 function App() {
   const [view, setView] = useState<'analyzer' | 'generator'>('analyzer');
-  return ( <div className="min-h-screen bg-gray-900 text-gray-200" style={{ fontFamily: "'Montserrat', sans-serif" }}> <style>{` @media print { .printable-hide { display: none; } #resume-output { position: absolute; left: 0; top: 0; width: 100%; margin: 0; border: none; box-shadow: none; } } .form-input:focus { outline: none; box-shadow: 0 0 0 2px #ef4444; } `}</style> <div className="printable-hide"> <header className="bg-gray-800 shadow-lg"> <div className="container mx-auto px-4 py-6"> <h1 className="text-3xl font-bold text-center text-red-500 tracking-wider">AI RESUME BUILDER</h1> <p className="text-center text-gray-400 mt-1">Craft and Analyze Resumes with the Power of AI</p> </div> </header> <main className="container mx-auto px-4 py-8"> <div className="flex justify-center border-b-2 border-gray-700 mb-8"> <button onClick={() => setView('analyzer')} className={`px-6 py-3 font-bold rounded-t-lg transition-colors duration-300 ${view === 'analyzer' ? 'border-b-4 border-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}>Resume Analyzer</button> <button onClick={() => setView('generator')} className={`px-6 py-3 font-bold rounded-t-lg transition-colors duration-300 ${view === 'generator' ? 'border-b-4 border-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}>Resume Generator</button> </div> </main> </div> <div className="container mx-auto px-4 pb-8"> {view === 'analyzer' ? <AnalyzerView /> : <GeneratorView />} </div> </div> );
+  return ( <div className="min-h-screen bg-gray-900 text-gray-200" style={{ fontFamily: "'Montserrat', sans-serif" }}> <style>{` @media print { .printable-hide { display: none; } #resume-output { position: absolute; left: 0; top: 0; width: 100%; margin: 0; border: none; box-shadow: none; } } .form-input:focus { outline: none; box-shadow: 0 0 0 2px #ef4444; } `}</style> <div className="printable-hide"> <header className="bg-gray-800 shadow-lg"> <div className="container mx-auto px-4 py-6"> <h1 className="text-3xl font-bold text-center text-red-500 tracking-wider">AI RESUME ARCHITECT</h1> <p className="text-center text-gray-400 mt-1">Craft and Analyze Resumes with the Power of AI</p> </div> </header> <main className="container mx-auto px-4 py-8"> <div className="flex justify-center border-b-2 border-gray-700 mb-8"> <button onClick={() => setView('analyzer')} className={`px-6 py-3 font-bold rounded-t-lg transition-colors duration-300 ${view === 'analyzer' ? 'border-b-4 border-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}>Resume Analyzer</button> <button onClick={() => setView('generator')} className={`px-6 py-3 font-bold rounded-t-lg transition-colors duration-300 ${view === 'generator' ? 'border-b-4 border-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`}>Resume Generator</button> </div> </main> </div> <div className="container mx-auto px-4 pb-8"> {view === 'analyzer' ? <AnalyzerView /> : <GeneratorView />} </div> </div> );
 }
 
 // --- ANALYZER VIEW COMPONENT (Redesigned Feedback) ---
 function AnalyzerView() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [feedback, setFeedback] = useState<any | null>(null); // State now holds an object
+  const [feedback, setFeedback] = useState<any | null>(null); 
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -27,23 +27,14 @@ function AnalyzerView() {
   
   const handleAnalyze = async () => { if (!file) { setError('Please upload a file first.'); return; } setIsLoading(true); setError(''); setFeedback(null); try { const data = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({ data }).promise; let text = ''; for (let i = 1; i <= pdf.numPages; i++) { const page = await pdf.getPage(i); const content = await page.getTextContent(); text += content.items.map((item: any) => item.str).join(' '); } const aiFeedback = await callFakeAnalyzerAPI(text); setFeedback(aiFeedback); } catch (err: any) { console.error(err); setError(`An error occurred: ${err.message}`); } finally { setIsLoading(false); } };
   
-  const callFakeAnalyzerAPI = async (text: string) => {
-    // The simulated AI now returns a structured object
+  // --- THIS IS THE LINE I FIXED ---
+  // Renamed 'text' to '_text' to tell the compiler it's intentionally unused.
+  const callFakeAnalyzerAPI = async (_text: string) => {
     const mockFeedback = {
       overallScore: 88,
-      strengths: [
-        "**Quantifiable Impact:** Excellent use of numbers (e.g., 'CGPA: 9.37') provides concrete evidence of your performance.",
-        "**Strong Project Descriptions:** Your project descriptions are detailed and clearly explain the technologies used and the outcomes.",
-        "**Modern Skill Set:** The skills section is well-organized and showcases a highly relevant, modern tech stack (MERN, Data Analysis tools).",
-      ],
-      areasForImprovement: [
-        "**Action Verbs:** The start of some project descriptions could be made more impactful. Instead of 'Designed and implemented', try leading with the result, like 'Improved road safety by designing and implementing...'",
-        "**LinkedIn URL:** While included, ensure it's a clickable hyperlink in digital versions of your resume for easy access for recruiters.",
-      ],
-      actionableSuggestions: [
-        "**Add a 'Technical Proficiencies' Summary:** Consider adding a brief, high-level summary of your core technical abilities right below your career objective for quick scanning.",
-        "**Tailor for Each Application:** For each job you apply for, slightly re-order your skills or projects to highlight the most relevant experience first.",
-      ],
+      strengths: [ "**Quantifiable Impact:** Excellent use of numbers provides concrete evidence of your performance.", "**Strong Project Descriptions:** Your project descriptions are detailed and clearly explain the technologies used.", "**Modern Skill Set:** The skills section is well-organized and showcases a highly relevant, modern tech stack.", ],
+      areasForImprovement: [ "**Action Verbs:** The start of some descriptions could be more impactful. Try leading with a result-oriented verb.", "**LinkedIn URL:** Ensure it's a clickable hyperlink in digital versions of your resume for easy access.", ],
+      actionableSuggestions: [ "**Add a 'Technical Proficiencies' Summary:** Consider adding a brief summary of your core technical abilities for quick scanning.", "**Tailor for Each Application:** For each job, re-order your skills or projects to highlight the most relevant experience first.", ],
     };
     return new Promise(resolve => setTimeout(() => resolve(mockFeedback), 2500));
   };
@@ -56,60 +47,10 @@ function AnalyzerView() {
         <p className="mb-4 text-gray-400 min-h-[24px]">{file ? `Selected file: ${file.name}` : "Upload resume (PDF) for AI feedback."}</p>
         <button onClick={() => fileInputRef.current?.click()} className="bg-red-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-700 transition-transform transform hover:scale-105">{file ? 'Change PDF' : 'Upload PDF'}</button>
       </div>
-      {file && !feedback && !isLoading && (
-        <div className="text-center">
-          <button onClick={handleAnalyze} disabled={isLoading} className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 disabled:bg-gray-500 transition-all transform hover:scale-105">
-            {isLoading ? 'Analyzing...' : 'Analyze Now'}
-          </button>
-        </div>
-      )}
+      {file && !feedback && !isLoading && ( <div className="text-center"> <button onClick={handleAnalyze} disabled={isLoading} className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 disabled:bg-gray-500 transition-all transform hover:scale-105"> {isLoading ? 'Analyzing...' : 'Analyze Now'} </button> </div> )}
       {error && <p className="text-red-400 text-center mt-4 p-2 bg-red-900 bg-opacity-50 rounded-md">{error}</p>}
-      
       {isLoading && <p className="text-center text-gray-400 animate-pulse text-lg">Analyzing your resume, please wait...</p>}
-      {feedback && (
-        <div className="space-y-6 animate-fade-in">
-          <div>
-            <h3 className="font-bold text-lg mb-2 text-gray-200 text-center">Overall Score</h3>
-            <div className="bg-gray-900 rounded-lg p-4">
-              <div className="relative h-4 bg-gray-700 rounded-full overflow-hidden">
-                <div className="absolute top-0 left-0 h-full bg-red-500 rounded-full" style={{ width: `${feedback.overallScore}%` }}></div>
-              </div>
-              <p className="text-center text-2xl font-bold mt-2 text-red-500">{feedback.overallScore} / 100</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gray-900 p-6 rounded-lg border border-green-500/30">
-              <div className="flex items-center mb-3">
-                <CheckCircleIcon />
-                <h4 className="font-bold text-lg ml-2 text-green-400">Strengths</h4>
-              </div>
-              <ul className="space-y-2 text-gray-300 text-sm list-disc list-inside">
-                {feedback.strengths.map((item: string, index: number) => <li key={index} dangerouslySetInnerHTML={{ __html: marked(item) as string }} />)}
-              </ul>
-            </div>
-            <div className="bg-gray-900 p-6 rounded-lg border border-yellow-500/30">
-              <div className="flex items-center mb-3">
-                <XCircleIcon />
-                <h4 className="font-bold text-lg ml-2 text-yellow-400">Areas for Improvement</h4>
-              </div>
-              <ul className="space-y-2 text-gray-300 text-sm list-disc list-inside">
-                {feedback.areasForImprovement.map((item: string, index: number) => <li key={index} dangerouslySetInnerHTML={{ __html: marked(item) as string }} />)}
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-gray-900 p-6 rounded-lg border border-blue-500/30">
-            <div className="flex items-center mb-3">
-              <LightbulbIcon />
-              <h4 className="font-bold text-lg ml-2 text-blue-400">Actionable Suggestions</h4>
-            </div>
-            <ul className="space-y-2 text-gray-300 text-sm list-decimal list-inside">
-              {feedback.actionableSuggestions.map((item: string, index: number) => <li key={index} dangerouslySetInnerHTML={{ __html: marked(item) as string }} />)}
-            </ul>
-          </div>
-        </div>
-      )}
+      {feedback && ( <div className="space-y-6 animate-fade-in"> <div> <h3 className="font-bold text-lg mb-2 text-gray-200 text-center">Overall Score</h3> <div className="bg-gray-900 rounded-lg p-4"> <div className="relative h-4 bg-gray-700 rounded-full overflow-hidden"> <div className="absolute top-0 left-0 h-full bg-red-500 rounded-full" style={{ width: `${feedback.overallScore}%` }}></div> </div> <p className="text-center text-2xl font-bold mt-2 text-red-500">{feedback.overallScore} / 100</p> </div> </div> <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> <div className="bg-gray-900 p-6 rounded-lg border border-green-500/30"> <div className="flex items-center mb-3"> <CheckCircleIcon /> <h4 className="font-bold text-lg ml-2 text-green-400">Strengths</h4> </div> <ul className="space-y-2 text-gray-300 text-sm list-disc list-inside"> {feedback.strengths.map((item: string, index: number) => <li key={index} dangerouslySetInnerHTML={{ __html: marked(item) as string }} />)} </ul> </div> <div className="bg-gray-900 p-6 rounded-lg border border-yellow-500/30"> <div className="flex items-center mb-3"> <XCircleIcon /> <h4 className="font-bold text-lg ml-2 text-yellow-400">Areas for Improvement</h4> </div> <ul className="space-y-2 text-gray-300 text-sm list-disc list-inside"> {feedback.areasForImprovement.map((item: string, index: number) => <li key={index} dangerouslySetInnerHTML={{ __html: marked(item) as string }} />)} </ul> </div> </div> <div className="bg-gray-900 p-6 rounded-lg border border-blue-500/30"> <div className="flex items-center mb-3"> <LightbulbIcon /> <h4 className="font-bold text-lg ml-2 text-blue-400">Actionable Suggestions</h4> </div> <ul className="space-y-2 text-gray-300 text-sm list-decimal list-inside"> {feedback.actionableSuggestions.map((item: string, index: number) => <li key={index} dangerouslySetInnerHTML={{ __html: marked(item) as string }} />)} </ul> </div> </div> )}
     </div>
   );
 }
