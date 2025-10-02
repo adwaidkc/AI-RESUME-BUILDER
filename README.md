@@ -83,16 +83,11 @@ npm run dev
 
 Visit 👉 http://localhost:5173
 
-📸 Demo
 
-(Insert screenshots / GIFs of Analyzer & Generator here for more appeal!)
 
 🤝 Contributing
 
 Contributions are welcome! Feel free to fork this repo and submit pull requests.
 
-📜 License
-
-This project is licensed under the MIT License.
 
 ⭐ If you like this project, don’t forget to star the repo!
