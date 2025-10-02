@@ -81,7 +81,7 @@ npm run dev
 
 🌐 Open in Browser
 
-Visit 👉 http://localhost:5173
+Visit 👉 https://ai-resume-builder-chi-five.vercel.app/
 
 
 
